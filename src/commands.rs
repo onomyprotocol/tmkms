@@ -9,6 +9,7 @@ pub mod start;
 pub mod version;
 #[cfg(feature = "yubihsm")]
 pub mod yubihsm;
+pub mod ether;
 
 #[cfg(feature = "ledger")]
 pub use self::ledger::LedgerCommand;
@@ -22,6 +23,7 @@ pub use self::{init::InitCommand, start::StartCommand, version::VersionCommand};
 use crate::config::{KmsConfig, CONFIG_ENV_VAR, CONFIG_FILE_NAME};
 use abscissa_core::{Command, Configurable, Help, Options, Runnable};
 use std::{env, path::PathBuf};
+use crate::commands::ether::EtherCommand;
 
 /// Subcommands of the KMS command-line application
 #[derive(Command, Debug, Options, Runnable)]
@@ -56,6 +58,10 @@ pub enum KmsCommand {
     #[cfg(feature = "softsign")]
     #[options(help = "subcommands for software signer")]
     Softsign(SoftsignCommand),
+
+    /// 'ether' subcommand
+    #[options(help = "subcommands for ethereum signer")]
+    Ether(EtherCommand),
 }
 
 impl KmsCommand {

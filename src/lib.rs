@@ -3,6 +3,11 @@
 #![deny(unsafe_code)]
 #![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 
+// Map type used within this application
+use std::collections::BTreeMap as Map;
+
+pub use crate::application::KmsApplication;
+
 #[cfg(not(any(feature = "softsign", feature = "yubihsm", feature = "ledger")))]
 compile_error!(
     "please enable one of the following backends with cargo's --features argument: \
@@ -28,8 +33,5 @@ pub mod tx_signer;
 
 #[cfg(feature = "yubihsm")]
 pub mod yubihsm;
+pub mod eth_signer;
 
-pub use crate::application::KmsApplication;
-
-// Map type used within this application
-use std::collections::BTreeMap as Map;
