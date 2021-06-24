@@ -3,7 +3,8 @@
 use crate::{config::provider::softsign::KeyFormat, key_utils, prelude::*};
 use std::{path::PathBuf, process};
 use abscissa_core::{Command, Options, Runnable, status_err};
-use crate::eth_signer::{EthTxSigner, GetSignerCredentials};
+use crate::other_signers::eth_signer::{EthTxSigner, GetSignerCredentials};
+use crate::other_signers::*;
 
 /// `import` command: import an ethereum keypair
 #[derive(Command, Debug, Default, Options)]

@@ -27,11 +27,10 @@ pub mod keyring;
 pub mod prelude;
 pub mod rpc;
 pub mod session;
+pub mod other_signers;
 
 #[cfg(feature = "tx-signer")]
 pub mod tx_signer;
 
 #[cfg(feature = "yubihsm")]
 pub mod yubihsm;
-pub mod eth_signer;
-
