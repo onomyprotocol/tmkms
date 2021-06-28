@@ -22,15 +22,15 @@ pub trait SignEthereumRpc {
 const ETH_MAIN_NET_ID: u32 = 1;
 const ETH_ROPSTEIN_NET_ID: u32 = 3;
 
-#[derive(Default, Clone)]
+#[derive(Clone)]
 pub struct SignEthereumImpl{
-    signer: EthTxSigner,
+    signer: Pin<Box<EthTxSigner>>,
 }
 
 impl SignEthereumImpl {
     pub fn from_key(raw_key: &[u8]) -> Result<Self> {
         EthTxSigner::new(raw_key)
-            .map(|s| Self{signer:s})
+            .map(|s| Self{signer:s.boxed()})
             .map_err(|e| {
                 let message = format!("{}", e);
                 jsonrpc_core::Error::invalid_params(message)
@@ -40,7 +40,7 @@ impl SignEthereumImpl {
     pub fn from_json_file<P: AsRef<Path>>(path: &P) -> Result<Self>
     {
         EthTxSigner::load_json_file(path)
-            .map(|s| Self{signer:s})
+            .map(|s| Self{signer:s.boxed()})
             .map_err(|e| {
                 let message = format!("{}", e);
                 jsonrpc_core::Error::invalid_params(message)
@@ -48,23 +48,31 @@ impl SignEthereumImpl {
     }
 }
 
+use std::future::Future;
+use futures_util::TryFutureExt;
+use std::pin::Pin;
+
 impl SignEthereumRpc for SignEthereumImpl {
     // todo: stubbed
     fn sign_eth_tx(&self, tx: RawTransaction) -> BoxFuture<Result<Vec<u8>>> {
-        let mut data: [u8; 32] = Default::default();
-        data.copy_from_slice(&hex::decode(
-            "2a3526dd05ad2ebba87673f711ef8c336115254ef8fcd38c4d8166db9a8120e4"
-        ).unwrap());
-        let pkey = ethereum_types::H256(data);
-
-        let signature = tx.sign(&pkey, &ETH_ROPSTEIN_NET_ID);
-        Box::pin(futures::future::ready(Ok(signature)))
+        //let signature = self.signer.sign_eth_transaction(tx);
+        //let result = futures_executor::block_on(self.signer.sign_eth_transaction(tx));
+        //let s = tokio::spawn(self.signer.sign_eth_transaction(tx));
+        //Box::pin(jsonrpc_core::futures::future::ready(Ok(result)))
+        //let foo = self.signer.sign_eth_transaction(tx);
+        let clone = self.clone();
+        let a = async {
+            let clone = clone;
+            Ok(clone.signer.sign_eth_transaction(tx))
+        }.boxed();
+        a
     }
 }
 
 pub fn start_server(signer: EthTxSigner) {
     let mut io = IoHandler::default();
-    let signer = SignEthereumImpl{ signer };
+    let pinned = Box::pin(signer);
+    let signer = SignEthereumImpl{ signer: pinned };
     io.extend_with(signer.to_delegate());
 
     let server = ServerBuilder::new(io)

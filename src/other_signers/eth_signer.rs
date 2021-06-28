@@ -19,11 +19,16 @@ pub struct EthTxSigner {
     private_key: H256,
 }
 
+use std::pin::Pin;
 impl EthTxSigner {
     pub fn new(raw_key: &[u8]) -> Result<Self, Error> {
         let raw_private_key: &[u8; 32] = raw_key.try_into()?;
         let private_key: H256 = raw_private_key.try_into()?;
         Ok(Self { private_key })
+    }
+
+    pub fn boxed(self) -> Pin<Box<Self>> {
+        Box::pin(self)
     }
 
     pub fn parse_json<T: AsRef<str>>(json_string: T) -> Result<Self, Error> {
@@ -47,7 +52,7 @@ impl EthTxSigner {
     }
 
     /// Local raw transaction signing, does not connect to any remotes.
-    pub async fn sign_eth_transaction(&self, tx: RawTransaction) -> Vec<u8> {
+    pub fn sign_eth_transaction(&self, tx: RawTransaction) -> Vec<u8> {
         let private_key = self.get_private_key();
         let private_key: [u8; 32] = private_key
             .try_into()
