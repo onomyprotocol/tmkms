@@ -10,6 +10,11 @@ pub mod version;
 #[cfg(feature = "yubihsm")]
 pub mod yubihsm;
 
+#[cfg(feature = "softsign")]
+pub mod ether;
+
+#[cfg(feature = "softsign")]
+pub use self::ether::EtherCommand;
 #[cfg(feature = "ledger")]
 pub use self::ledger::LedgerCommand;
 #[cfg(feature = "softsign")]
@@ -56,6 +61,11 @@ pub enum KmsCommand {
     #[cfg(feature = "softsign")]
     #[options(help = "subcommands for software signer")]
     Softsign(SoftsignCommand),
+
+    /// 'ether' subcommand
+    #[cfg(feature = "softsign")]
+    #[options(help = "subcommands for ethereum signer")]
+    Ether(EtherCommand),
 }
 
 impl KmsCommand {

@@ -1,18 +1,17 @@
 //! Configuration file structures (with serde-derived parser)
 
+use serde::Deserialize;
+
+#[cfg(feature = "tx-signer")]
+pub use self::tx_signer::TxSignerConfig;
+pub use self::validator::*;
+use self::{chain::ChainConfig, provider::ProviderConfig};
+
 pub mod chain;
 pub mod provider;
 #[cfg(feature = "tx-signer")]
 pub mod tx_signer;
 pub mod validator;
-
-pub use self::validator::*;
-
-#[cfg(feature = "tx-signer")]
-pub use self::tx_signer::TxSignerConfig;
-
-use self::{chain::ChainConfig, provider::ProviderConfig};
-use serde::Deserialize;
 
 /// Environment variable containing path to config file
 pub const CONFIG_ENV_VAR: &str = "TMKMS_CONFIG_FILE";
