@@ -1,7 +1,6 @@
 //! Ethereum transaction signing configuration
 
 use anomaly::format_err;
-use ethereum_tx_sign;
 use ethereum_tx_sign::RawTransaction;
 use ethereum_types::H256;
 use secp256k1::key::{PublicKey, SecretKey};
