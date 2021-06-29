@@ -94,10 +94,7 @@ impl GetSignerCredentials for EthTxSigner {
     }
 }
 
-#[test]
 mod test {
-    use super::*;
-
     #[test]
     pub fn test_ser_eth_key() {
         let mut data: [u8; 32] = Default::default();
@@ -106,7 +103,7 @@ mod test {
                 .unwrap(),
         );
         let private_key = ethereum_types::H256(data);
-        let signer = EthTxSigner { private_key };
+        let signer = super::EthTxSigner { private_key };
         let s = serde_json::to_string_pretty(&signer).unwrap();
         println!("{}", s);
     }

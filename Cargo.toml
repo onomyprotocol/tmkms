@@ -64,6 +64,9 @@ jsonrpc-core-client = "17.1.0"
 jsonrpc-ws-server = "17.1.0"
 jsonrpc-derive = "17.1.0"
 
+[dev-dependencies]
+rand = "0.7"
+
 [features]
 softsign = []
 tx-signer = ["abscissa_tokio", "hyper", "hyper-rustls", "stdtx", "tendermint-rpc"]
