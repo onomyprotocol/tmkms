@@ -27,6 +27,7 @@ pub mod keyring;
 pub mod prelude;
 pub mod rpc;
 pub mod session;
+/// Signers for non-Tendermint transactions
 pub mod other_signers;
 
 #[cfg(feature = "tx-signer")]

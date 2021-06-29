@@ -10,31 +10,39 @@ use ethereum_types::H256;
 use serde::{Deserialize, Serialize};
 use anomaly::format_err;
 use secp256k1::key::{SecretKey, PublicKey};
+use std::pin::Pin;
 
+#[allow(unused)]
 const ETH_MAIN_NET_ID: u32 = 1;
+#[allow(unused)]
 const ETH_ROPSTEIN_NET_ID: u32 = 3;
 
+/// An entity that signs transactions with provided private key
 #[derive(Deserialize, Serialize, Default, Clone)]
 pub struct EthTxSigner {
     private_key: H256,
 }
 
-use std::pin::Pin;
 impl EthTxSigner {
+    /// Create signer from raw key
     pub fn new(raw_key: &[u8]) -> Result<Self, Error> {
         let raw_private_key: &[u8; 32] = raw_key.try_into()?;
         let private_key: H256 = raw_private_key.try_into()?;
         Ok(Self { private_key })
     }
 
+    /// Get Pin<Box<Self>> for async purposes
     pub fn boxed(self) -> Pin<Box<Self>> {
         Box::pin(self)
     }
 
+    /// Create signer from JSON string
     pub fn parse_json<T: AsRef<str>>(json_string: T) -> Result<Self, Error> {
         let result = serde_json::from_str::<Self>(json_string.as_ref())?;
         Ok(result)
     }
+
+    /// Create signer from JSON file. Basically just wrapper for `fn parse_json`
     pub fn load_json_file<P>(path: &P) -> Result<Self, Error>
         where
             P: AsRef<Path>,
@@ -86,6 +94,7 @@ impl GetSignerCredentials for EthTxSigner{
     }
 }
 
+#[test]
 mod test {
     use super::*;
 

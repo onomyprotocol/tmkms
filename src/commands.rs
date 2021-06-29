@@ -9,6 +9,7 @@ pub mod start;
 pub mod version;
 #[cfg(feature = "yubihsm")]
 pub mod yubihsm;
+
 pub mod ether;
 
 #[cfg(feature = "ledger")]

@@ -53,20 +53,16 @@ wait-timeout = "0.2"
 yubihsm = { version = "0.38", features = ["secp256k1", "setup", "usb"], optional = true }
 zeroize = "1"
 
-ethers = { git = "https://github.com/gakonst/ethers-rs"}
+#Ethereum-signer dependencies
 hex = "0.3.0"
 ethereum-types = "0.9.2"
 ethereum-tx-sign = "3.0.4"
 anomaly = "0.2"
 secp256k1 = {version = "0.19", features = ["recovery"] }
-
 jsonrpc-core = "17.1.0"
 jsonrpc-core-client = "17.1.0"
 jsonrpc-ws-server = "17.1.0"
 jsonrpc-derive = "17.1.0"
-
-[dev-dependencies]
-rand = "0.7"
 
 [features]
 softsign = []

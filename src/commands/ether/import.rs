@@ -4,9 +4,8 @@ use crate::{config::provider::softsign::KeyFormat, key_utils, prelude::*};
 use std::{path::PathBuf, process};
 use abscissa_core::{Command, Options, Runnable, status_err};
 use crate::other_signers::eth_signer::{EthTxSigner, GetSignerCredentials};
-use crate::other_signers::*;
 
-/// `import` command: import an ethereum keypair
+/// `import` command: import an ethereum private key. Gets .json, stores raw as base64
 #[derive(Command, Debug, Default, Options)]
 pub struct ImportCommand {
     #[options(
@@ -15,7 +14,7 @@ pub struct ImportCommand {
     )]
     format: Option<String>,
 
-    #[options(free, help = "[INPUT] and [OUTPUT] paths for key generation")]
+    #[options(free, help = "[INPUT] and [OUTPUT] paths for key")]
     paths: Vec<PathBuf>,
 }
 
@@ -23,7 +22,7 @@ impl Runnable for ImportCommand {
     fn run(&self) {
         if self.paths.len() != 2 {
             status_err!("expected 2 arguments, got {}", self.paths.len());
-            eprintln!("\nUsage: tmkms softsign import [priv_validator.json] [output.key]");
+            eprintln!("\nUsage: tmkms ether import [priv_key_json.json] [priv_key_base64.json]");
             process::exit(1);
         }
 

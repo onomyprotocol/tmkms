@@ -1,12 +1,11 @@
 //! `tmkms ether start` command
 
-use crate::{config::provider::softsign::KeyFormat, key_utils, prelude::*};
 use std::{path::PathBuf, process};
 use abscissa_core::{Command, Options, Runnable, status_err};
-use crate::other_signers::eth_signer::{EthTxSigner, GetSignerCredentials};
+use crate::other_signers::eth_signer::EthTxSigner;
 use crate::other_signers::rpc;
 
-/// `import` command: import an ethereum keypair
+/// `start` command: starts signing service
 #[derive(Command, Debug, Default, Options)]
 pub struct StartCommand {
     #[options(free, help = "path to private key")]
