@@ -1,16 +1,16 @@
 //! Ethereum transaction signing configuration
 
-use std::convert::TryInto;
+use anomaly::format_err;
 use ethereum_tx_sign;
 use ethereum_tx_sign::RawTransaction;
-use std::path::Path;
-use std::fs;
-use tendermint::error::{Error, Kind};
 use ethereum_types::H256;
+use secp256k1::key::{PublicKey, SecretKey};
 use serde::{Deserialize, Serialize};
-use anomaly::format_err;
-use secp256k1::key::{SecretKey, PublicKey};
+use std::convert::TryInto;
+use std::fs;
+use std::path::Path;
 use std::pin::Pin;
+use tendermint::error::{Error, Kind};
 
 #[allow(unused)]
 const ETH_MAIN_NET_ID: u32 = 1;
@@ -44,8 +44,8 @@ impl EthTxSigner {
 
     /// Create signer from JSON file. Basically just wrapper for `fn parse_json`
     pub fn load_json_file<P>(path: &P) -> Result<Self, Error>
-        where
-            P: AsRef<Path>,
+    where
+        P: AsRef<Path>,
     {
         let json_string = fs::read_to_string(path).map_err(|e| {
             format_err!(
@@ -79,7 +79,7 @@ pub trait GetSignerCredentials {
     fn get_public_key(&self) -> Vec<u8>;
 }
 
-impl GetSignerCredentials for EthTxSigner{
+impl GetSignerCredentials for EthTxSigner {
     fn get_private_key(&self) -> Vec<u8> {
         self.private_key.as_bytes().to_vec()
     }
@@ -101,11 +101,12 @@ mod test {
     #[test]
     pub fn test_ser_eth_key() {
         let mut data: [u8; 32] = Default::default();
-        data.copy_from_slice(&hex::decode(
-            "2a3526dd05ad2ebba87673f711ef8c336115254ef8fcd38c4d8166db9a8120e4"
-        ).unwrap());
+        data.copy_from_slice(
+            &hex::decode("2a3526dd05ad2ebba87673f711ef8c336115254ef8fcd38c4d8166db9a8120e4")
+                .unwrap(),
+        );
         let private_key = ethereum_types::H256(data);
-        let signer = EthTxSigner{private_key};
+        let signer = EthTxSigner { private_key };
         let s = serde_json::to_string_pretty(&signer).unwrap();
         println!("{}", s);
     }
@@ -201,4 +202,3 @@ mod test {
     }
     */
 }
-

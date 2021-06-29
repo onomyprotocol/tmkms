@@ -3,8 +3,8 @@
 mod import;
 mod start;
 
-use abscissa_core::{Command, Help, Options, Runnable};
 use crate::commands::ether::{import::ImportCommand, start::StartCommand};
+use abscissa_core::{Command, Help, Options, Runnable};
 
 /// 'ether' command: provides subcommands for local Ethereum signer
 #[derive(Command, Debug, Options, Runnable)]

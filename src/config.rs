@@ -2,10 +2,10 @@
 
 use serde::Deserialize;
 
-use self::{chain::ChainConfig, provider::ProviderConfig};
 #[cfg(feature = "tx-signer")]
 pub use self::tx_signer::TxSignerConfig;
 pub use self::validator::*;
+use self::{chain::ChainConfig, provider::ProviderConfig};
 
 pub mod chain;
 pub mod provider;

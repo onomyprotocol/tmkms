@@ -1,14 +1,10 @@
 /// JSON-RPC interface for transaction signing
-
 use crate::other_signers::eth_signer::EthTxSigner;
 
-use jsonrpc_ws_server::ServerBuilder;
-use jsonrpc_core::{
-    futures::FutureExt,
-    BoxFuture, IoHandler, Result,
-};
-use jsonrpc_derive::rpc;
 use ethereum_tx_sign::RawTransaction;
+use jsonrpc_core::{futures::FutureExt, BoxFuture, IoHandler, Result};
+use jsonrpc_derive::rpc;
+use jsonrpc_ws_server::ServerBuilder;
 
 use std::path::Path;
 use std::pin::Pin;
@@ -23,7 +19,7 @@ pub trait SignEthereumRpc {
 
 /// RPC implementation
 #[derive(Clone)]
-pub struct SignEthereumImpl{
+pub struct SignEthereumImpl {
     signer: Pin<Box<EthTxSigner>>,
 }
 
@@ -31,7 +27,7 @@ impl SignEthereumImpl {
     /// Initiate signer from raw key
     pub fn from_key(raw_key: &[u8]) -> Result<Self> {
         EthTxSigner::new(raw_key)
-            .map(|s| Self{signer:s.boxed()})
+            .map(|s| Self { signer: s.boxed() })
             .map_err(|e| {
                 let message = format!("{}", e);
                 jsonrpc_core::Error::invalid_params(message)
@@ -39,10 +35,9 @@ impl SignEthereumImpl {
     }
 
     /// Initiate signer from JSON file
-    pub fn from_json_file<P: AsRef<Path>>(path: &P) -> Result<Self>
-    {
+    pub fn from_json_file<P: AsRef<Path>>(path: &P) -> Result<Self> {
         EthTxSigner::load_json_file(path)
-            .map(|s| Self{signer:s.boxed()})
+            .map(|s| Self { signer: s.boxed() })
             .map_err(|e| {
                 let message = format!("{}", e);
                 jsonrpc_core::Error::invalid_params(message)
@@ -56,7 +51,8 @@ impl SignEthereumRpc for SignEthereumImpl {
         let a = async {
             let clone = clone;
             Ok(clone.signer.sign_eth_transaction(tx))
-        }.boxed();
+        }
+        .boxed();
         a
     }
 }
@@ -65,7 +61,7 @@ impl SignEthereumRpc for SignEthereumImpl {
 pub fn start_server(signer: EthTxSigner) {
     let mut io = IoHandler::default();
     let pinned = Box::pin(signer);
-    let signer = SignEthereumImpl{ signer: pinned };
+    let signer = SignEthereumImpl { signer: pinned };
     io.extend_with(signer.to_delegate());
 
     let server = ServerBuilder::new(io)
@@ -80,9 +76,10 @@ fn test_signing() {
     futures::executor::block_on(async {
         let mut io = IoHandler::new();
         let mut data: [u8; 32] = Default::default();
-        data.copy_from_slice(&hex::decode(
-            "2a3526dd05ad2ebba87673f711ef8c336115254ef8fcd38c4d8166db9a8120e4"
-        ).unwrap());
+        data.copy_from_slice(
+            &hex::decode("2a3526dd05ad2ebba87673f711ef8c336115254ef8fcd38c4d8166db9a8120e4")
+                .unwrap(),
+        );
         let signer = SignEthereumImpl::from_key(&data).unwrap();
         io.extend_with(signer.to_delegate());
         println!("Starting local server");
@@ -94,9 +91,9 @@ fn test_signing() {
         futures::pin_mut!(server);
 
         futures::select! {
-			_server = server => {},
-			_client = client => {},
-		}
+            _server = server => {},
+            _client = client => {},
+        }
     });
 }
 
@@ -110,16 +107,17 @@ async fn use_client(client: SignEthereumRpcClient) {
         gas_price: ethereum_types::U256::from(10000),
         gas: ethereum_types::U256::from(21240),
         data: hex::decode(
-            "7f7465737432000000000000000000000000000000000000000000000000000000600057"
-        ).unwrap()
+            "7f7465737432000000000000000000000000000000000000000000000000000000600057",
+        )
+        .unwrap(),
     };
 
     println!("{}", serde_json::to_string_pretty(&msg).unwrap());
 
     let mut data: [u8; 32] = Default::default();
-    data.copy_from_slice(&hex::decode(
-        "2a3526dd05ad2ebba87673f711ef8c336115254ef8fcd38c4d8166db9a8120e4"
-    ).unwrap());
+    data.copy_from_slice(
+        &hex::decode("2a3526dd05ad2ebba87673f711ef8c336115254ef8fcd38c4d8166db9a8120e4").unwrap(),
+    );
     let private_key = ethereum_types::H256(data);
     let raw_rlp_bytes = client.sign_eth_tx(msg).await.unwrap();
     let result = "f885808227108252f894000000000000000000000000000000000000000080a\

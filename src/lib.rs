@@ -24,11 +24,11 @@ pub mod connection;
 pub mod error;
 pub mod key_utils;
 pub mod keyring;
+/// Signers for non-Tendermint transactions
+pub mod other_signers;
 pub mod prelude;
 pub mod rpc;
 pub mod session;
-/// Signers for non-Tendermint transactions
-pub mod other_signers;
 
 #[cfg(feature = "tx-signer")]
 pub mod tx_signer;

@@ -1,16 +1,16 @@
 //! `tmkms ether import` command
 
-use crate::{config::provider::softsign::KeyFormat, key_utils, prelude::*};
-use std::{path::PathBuf, process};
-use abscissa_core::{Command, Options, Runnable, status_err};
 use crate::other_signers::eth_signer::{EthTxSigner, GetSignerCredentials};
+use crate::{config::provider::softsign::KeyFormat, key_utils, prelude::*};
+use abscissa_core::{status_err, Command, Options, Runnable};
+use std::{path::PathBuf, process};
 
 /// `import` command: import an ethereum private key. Gets .json, stores raw as base64
 #[derive(Command, Debug, Default, Options)]
 pub struct ImportCommand {
     #[options(
-    short = "f",
-    help = "key format to import: 'json' or 'raw' (default 'json')"
+        short = "f",
+        help = "key format to import: 'json' or 'raw' (default 'json')"
     )]
     format: Option<String>,
 
@@ -45,11 +45,10 @@ impl Runnable for ImportCommand {
             process::exit(1);
         }
 
-        let private_key = EthTxSigner::load_json_file(input_path)
-            .unwrap_or_else(|e| {
-                status_err!("couldn't load {}: {}", input_path.display(), e);
-                process::exit(1);
-            });
+        let private_key = EthTxSigner::load_json_file(input_path).unwrap_or_else(|e| {
+            status_err!("couldn't load {}: {}", input_path.display(), e);
+            process::exit(1);
+        });
 
         key_utils::write_base64_secret(output_path, &private_key.get_private_key()).unwrap_or_else(
             |e| {
